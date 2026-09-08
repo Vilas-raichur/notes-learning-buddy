@@ -1,3 +1,6 @@
+from fastapi import UploadFile, File
+import shutil
+import os
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -53,3 +56,27 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 @app.get("/me", response_model=schemas.UserResponse)
 def read_current_user(current_user: models.User = Depends(get_current_user)):
     return current_user
+
+
+UPLOAD_DIR = "uploads"
+
+@app.post("/documents/upload", response_model=schemas.DocumentResponse)
+def upload_document(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    new_document = models.Document(
+        filename=file.filename,
+        owner_id=current_user.id
+    )
+    db.add(new_document)
+    db.commit()
+    db.refresh(new_document)
+
+    return new_document

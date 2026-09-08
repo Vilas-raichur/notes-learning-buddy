@@ -12,3 +12,12 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+    
+class DocumentResponse(BaseModel):
+    id: int
+    filename: str
+    upload_date: datetime
+    owner_id: int
+
+    class Config:
+        from_attributes = True
