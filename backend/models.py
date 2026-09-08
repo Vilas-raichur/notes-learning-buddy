@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from database import Base
@@ -21,5 +21,6 @@ class Document(Base):
     filename = Column(String)
     upload_date = Column(DateTime, default=datetime.utcnow)
     owner_id = Column(Integer, ForeignKey("users.id"))
+    content_text = Column(Text)
 
     owner = relationship("User", back_populates="documents")

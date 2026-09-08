@@ -1,3 +1,4 @@
+from text_extraction import extract_text
 from fastapi import UploadFile, File
 import shutil
 import os
@@ -71,9 +72,15 @@ def upload_document(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
+    try:
+        extracted_text = extract_text(file_path)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     new_document = models.Document(
         filename=file.filename,
-        owner_id=current_user.id
+        owner_id=current_user.id,
+        content_text=extracted_text
     )
     db.add(new_document)
     db.commit()
