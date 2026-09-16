@@ -16,8 +16,12 @@ def add_chunks_to_store(document_id: int, chunks: list[str], embeddings):
         metadatas=metadatas
     )
 
-def query_store(query_embedding, n_results=3):
+def query_store(query_embedding, n_results=3, document_ids=None):
+    where_filter = None
+    if document_ids:
+        where_filter = {"document_id": {"$in": document_ids}}
     return collection.query(
         query_embeddings=[query_embedding.tolist()],
-        n_results=n_results
+        n_results=n_results,
+        where=where_filter
     )

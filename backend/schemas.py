@@ -21,3 +21,11 @@ class DocumentResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+
+class QuestionRequest(BaseModel):
+    question: str
+
+class AnswerResponse(BaseModel):
+    answer: str

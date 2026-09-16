@@ -1,3 +1,4 @@
+from rag import answer_question
 from text_extraction import extract_text
 from fastapi import UploadFile, File
 import shutil
@@ -87,3 +88,20 @@ def upload_document(
     db.refresh(new_document)
 
     return new_document
+
+
+
+@app.post("/ask", response_model=schemas.AnswerResponse)
+def ask_question(
+    request: schemas.QuestionRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    user_documents = db.query(models.Document).filter(models.Document.owner_id == current_user.id).all()
+    document_ids = [doc.id for doc in user_documents]
+
+    if not document_ids:
+        raise HTTPException(status_code=404, detail="No documents found. Upload a document first.")
+
+    answer = answer_question(request.question, document_ids=document_ids)
+    return {"answer": answer}
