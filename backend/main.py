@@ -1,3 +1,5 @@
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from rag import answer_question
 from text_extraction import extract_text
 from fastapi import UploadFile, File
@@ -13,6 +15,10 @@ import schemas
 from security import hash_password, verify_password, create_access_token, decode_access_token
 
 app = FastAPI()
+
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+app.mount("/app", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+
 
 @app.get("/")
 def read_root():
@@ -117,3 +123,11 @@ def ask_question(
     ]
 
     return {"answer": result["answer"], "sources": sources}
+
+
+@app.get("/documents", response_model=list[schemas.DocumentResponse])
+def list_documents(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    return db.query(models.Document).filter(models.Document.owner_id == current_user.id).all()
