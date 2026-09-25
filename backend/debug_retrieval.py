@@ -1,11 +1,13 @@
-from embeddings import generate_embeddings
-from vector_store import query_store
+from sentence_transformers import SentenceTransformer
 
-question = "tell me or give atleast two references"
-query_vector = generate_embeddings([question])[0]
-results = query_store(query_vector, n_results=3, document_ids=[1])
+_model = None
 
-for i, chunk in enumerate(results['documents'][0]):
-    print(f"--- Retrieved chunk {i+1} ---")
-    print(chunk)
-    print()
+def get_model():
+    global _model
+    if _model is None:
+        _model = SentenceTransformer('all-MiniLM-L6-v2')
+    return _model
+
+def generate_embeddings(chunks: list[str]):
+    model = get_model()
+    return model.encode(chunks)

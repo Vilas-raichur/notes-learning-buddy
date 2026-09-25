@@ -27,5 +27,13 @@ class DocumentResponse(BaseModel):
 class QuestionRequest(BaseModel):
     question: str
 
+
+
+class SourceReference(BaseModel):
+    document_id: int
+    filename: str
+    chunk_index: int
+
 class AnswerResponse(BaseModel):
     answer: str
+    sources: list[SourceReference]

@@ -103,5 +103,17 @@ def ask_question(
     if not document_ids:
         raise HTTPException(status_code=404, detail="No documents found. Upload a document first.")
 
-    answer = answer_question(request.question, document_ids=document_ids)
-    return {"answer": answer}
+    doc_lookup = {doc.id: doc.filename for doc in user_documents}
+
+    result = answer_question(request.question, document_ids=document_ids)
+
+    sources = [
+        schemas.SourceReference(
+            document_id=meta["document_id"],
+            filename=doc_lookup.get(meta["document_id"], "unknown"),
+            chunk_index=meta["chunk_index"]
+        )
+        for meta in result["sources"]
+    ]
+
+    return {"answer": result["answer"], "sources": sources}
