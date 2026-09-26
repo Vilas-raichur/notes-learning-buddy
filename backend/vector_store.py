@@ -25,3 +25,7 @@ def query_store(query_embedding, n_results=3, document_ids=None):
         n_results=n_results,
         where=where_filter
     )
+
+
+def delete_document_from_store(document_id: int):
+    collection.delete(where={"document_id": document_id})

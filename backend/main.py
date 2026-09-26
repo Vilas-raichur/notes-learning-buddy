@@ -1,3 +1,4 @@
+from vector_store import delete_document_from_store
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from rag import answer_question
@@ -39,6 +40,22 @@ def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
+def get_unique_filename(db: Session, owner_id: int, filename: str) -> str:
+    existing_names = {
+        doc.filename for doc in db.query(models.Document).filter(models.Document.owner_id == owner_id).all()
+    }
+    if filename not in existing_names:
+        return filename
+
+    name, ext = os.path.splitext(filename)
+    counter = 1
+    new_name = f"{name} ({counter}){ext}"
+    while new_name in existing_names:
+        counter += 1
+        new_name = f"{name} ({counter}){ext}"
+    return new_name
+
+
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == form_data.username).first()
@@ -74,7 +91,8 @@ def upload_document(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    file_path = os.path.join(UPLOAD_DIR, file.filename)
+    unique_filename = get_unique_filename(db, current_user.id, file.filename)
+    file_path = os.path.join(UPLOAD_DIR, f"{current_user.id}_{unique_filename}")
 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
@@ -85,7 +103,7 @@ def upload_document(
         raise HTTPException(status_code=400, detail=str(e))
 
     new_document = models.Document(
-        filename=file.filename,
+        filename=unique_filename,
         owner_id=current_user.id,
         content_text=extracted_text
     )
@@ -131,3 +149,29 @@ def list_documents(
     current_user: models.User = Depends(get_current_user)
 ):
     return db.query(models.Document).filter(models.Document.owner_id == current_user.id).all()
+
+
+@app.delete("/documents/{document_id}")
+def delete_document(
+    document_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    document = db.query(models.Document).filter(
+        models.Document.id == document_id,
+        models.Document.owner_id == current_user.id
+    ).first()
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    file_path = os.path.join(UPLOAD_DIR, f"{current_user.id}_{document.filename}")
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    delete_document_from_store(document.id)
+
+    db.delete(document)
+    db.commit()
+
+    return {"detail": "Document deleted successfully"}
