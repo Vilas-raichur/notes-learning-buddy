@@ -5,6 +5,12 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+    
+
 class UserResponse(BaseModel):
     id: int
     email: EmailStr
