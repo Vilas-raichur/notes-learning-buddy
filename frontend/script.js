@@ -17,7 +17,7 @@ const backFromPassword = document.getElementById("back-from-password");
 const changePasswordForm = document.getElementById("change-password-form");
 const passwordMessage = document.getElementById("password-message");
 const aboutToggle = document.getElementById("about-toggle");
-const aboutSection = document.getElementById("about-section");
+
 const backFromAbout = document.getElementById("back-from-about");
 
 documentsToggle.addEventListener("click", () => {
@@ -383,4 +383,16 @@ askForm.addEventListener("submit", async (e) => {
         `;
     }
     chatHistory.scrollTop = chatHistory.scrollHeight;
+});
+
+
+document.getElementById("about-toggle").addEventListener("click", () => {
+    document.getElementById("profile-popover").classList.add("hidden");
+    document.getElementById("ask-view").classList.add("hidden");
+    document.getElementById("about-panel").classList.remove("hidden");
+});
+
+document.getElementById("back-from-about").addEventListener("click", () => {
+    document.getElementById("about-panel").classList.add("hidden");
+    document.getElementById("ask-view").classList.remove("hidden");
 });

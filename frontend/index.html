@@ -104,7 +104,7 @@
         <div id="resizer" class="resizer"></div>
 
         <main class="main-panel">
-            <div class="panel-inner">
+            <div class="panel-inner" id="ask-view">
             <div class="main-header">
                 <h2>Ask a question</h2>
                 <p class="hint">Answers are grounded only in the documents you've uploaded.</p>
@@ -122,7 +122,43 @@
                 <button type="submit" class="btn-primary">Ask</button>
             </form>
             </div>
-        </main>
+
+                <div class="panel-inner about-panel hidden" id="about-panel">
+                    <button type="button" id="back-from-about" class="btn-ghost about-back">&larr; Back</button>
+
+                    <div class="main-header">
+                        <h2>About</h2>
+                    </div>
+
+                    <div class="about-brand">
+                        <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
+                            <circle cx="32" cy="32" r="32" fill="#1B2540"/>
+                            <text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="bold" letter-spacing="-9"><tspan fill="#F3F3EF">S</tspan><tspan fill="#F2B705">B</tspan></text>
+                        </svg>
+                        <div>
+                            <h1 class="wordmark">StudyBuddy</h1>
+                            <p class="about-version">Version 1.0</p>
+                        </div>
+                    </div>
+
+                    <p class="about-intro">Ask questions about your own notes and papers. Every answer is grounded in your documents and shows where it came from.</p>
+
+                    <h2 class="about-heading">How it works</h2>
+                    <ol class="about-steps">
+                        <li><span class="step-num">1</span><div><strong>Upload</strong><p>Add your PDF or Word notes to your library.</p></div></li>
+                        <li><span class="step-num">2</span><div><strong>Ask</strong><p>Type a question in plain English.</p></div></li>
+                        <li><span class="step-num">3</span><div><strong>Check the source</strong><p>Each answer names the document and section it came from.</p></div></li>
+                    </ol>
+
+                    <h2 class="about-heading">Private by design</h2>
+                    <p class="about-text">Everything runs on this machine. Your documents and questions are never sent to an outside service.</p>
+
+                    <div class="about-footer">
+                        <span>Built by Vilas Raichur</span>
+                        <a href="https://github.com/Vilas-raichur/notes-learning-buddy" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                    </div>
+                </div>
+            </main>
     </div>
 
     <div id="change-password-section" class="auth-screen hidden">
@@ -140,27 +176,7 @@
         <p id="password-message"></p>
     </div>
 </div>
-<div id="about-section" class="auth-screen hidden">
-    <div class="auth-card">
-        <button type="button" id="back-from-about" class="btn-ghost" style="margin-bottom: 16px;">&larr; Back</button>
-        <div class="brand" style="margin-bottom: 16px;">
-            <svg class="brand-icon" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
-                <circle cx="32" cy="32" r="32" fill="#1B2540"/>
-                <text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="bold" letter-spacing="-9"><tspan fill="#F3F3EF">S</tspan><tspan fill="#F2B705">B</tspan></text>
-            </svg>
-            <h1 class="wordmark">StudyBuddy</h1>
-        </div>
-        <p style="color: var(--muted); font-size: 14px; line-height: 1.6;">
-            A full-stack, RAG-based study assistant. Upload your notes and research papers, then ask questions in plain English — every answer cites exactly which document and section it came from.
-        </p>
-        <p style="color: var(--muted); font-size: 13px; margin-top: 16px;">
-            <strong>Built with:</strong> FastAPI, SQLite, sentence-transformers, ChromaDB, Ollama
-        </p>
-        <p style="color: var(--muted); font-size: 13px; margin-top: 8px;">
-            Runs entirely offline once set up — no data ever leaves this machine.
-        </p>
-    </div>
-</div>
+
     <script src="script.js"></script>
 </body>
 </html>
