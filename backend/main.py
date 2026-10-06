@@ -1,4 +1,6 @@
-from vector_store import delete_document_from_store
+from chunking import chunk_text
+from embeddings import generate_embeddings
+from vector_store import add_chunks_to_store, delete_document_from_store
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from rag import answer_question
@@ -110,6 +112,11 @@ def upload_document(
     db.add(new_document)
     db.commit()
     db.refresh(new_document)
+
+    chunks = chunk_text(extracted_text)
+    if chunks:
+        vectors = generate_embeddings(chunks)
+        add_chunks_to_store(document_id=new_document.id, chunks=chunks, embeddings=vectors)
 
     return new_document
 
