@@ -197,3 +197,23 @@ def change_password(
     db.commit()
 
     return {"detail": "Password updated successfully"}
+
+
+@app.delete("/me")
+def delete_account(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    user_documents = db.query(models.Document).filter(models.Document.owner_id == current_user.id).all()
+
+    for document in user_documents:
+        file_path = os.path.join(UPLOAD_DIR, f"{current_user.id}_{document.filename}")
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        delete_document_from_store(document.id)
+        db.delete(document)
+
+    db.delete(current_user)
+    db.commit()
+
+    return {"detail": "Account deleted successfully"}
